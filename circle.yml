@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: mbgl/android-ci:ndk-r13b
+    working_directory: /src
+    environment:
+      LD_PRELOAD: /usr/lib/libsysconfcpus.so
+      LIBSYSCONFCPUS: 8
+      JOBS: 8
+      BUILDTYPE: Release
+    steps:
+      - checkout
+      - run:
+          name: Build libmapbox-gl.so for arm-v7
+          command: make android-lib-arm-v7
+      - run:
+          name: Build libmapbox-gl.so for arm-v8
+          command: make android-lib-arm-v8
+      - run:
+          name: Build libmapbox-gl.so for arm-v5
+          command: make android-lib-arm-v5
+      - run:
+          name: Build libmapbox-gl.so for mips
+          command: make android-lib-mips
+      - run:
+          name: Build libmapbox-gl.so for x86
+          command: make android-lib-x86
+      - run:
+          name: Build libmapbox-gl.so for x86-64
+          command: make android-lib-x86-64
+      - run:
+          name: Build package
+          command: make apackage
+      - run:
+          name: Show statistics
+          command: platform/android/scripts/metrics.sh
